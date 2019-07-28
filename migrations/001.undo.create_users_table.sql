@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS this_week_users;
