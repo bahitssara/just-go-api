@@ -1,3 +1,7 @@
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+
+
 function makeUsersArray() {
     return [
       {
@@ -40,11 +44,13 @@ function makeEventsArray() {
         {
             'id': 1,
             'weekday': 'Monday',
+            'event':'Test Events',
             'user_id': 1
         },
         {
             'id': 2,
             'weekday': 'Tuesday',
+            'event':'Test Events',
             'user_id': 2
         }
     ]
@@ -65,9 +71,25 @@ function makeFixtures() {
   return { testUsers, testEvents }
 }
 
+function seedUsers(db, users) {
+  const preppedUsers = users.map(user => ({
+    ...user,
+    password: bcrypt.hashSync(user.password, 1)
+  }))
+  return db.into('this_week_users').insert(preppedUsers)
+    .then(() =>
+      // update the auto sequence to stay in sync
+      db.raw(
+        `SELECT setval('this_week_users_id_seq', ?)`,
+        [users[users.length - 1].id],
+      )
+    )
+}
+
 module.exports = {
     makeEventsArray,
     makeUsersArray,
     cleanTables,
-    makeFixtures
+    makeFixtures,
+    seedUsers
 }

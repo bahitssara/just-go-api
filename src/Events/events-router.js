@@ -1,6 +1,9 @@
 const express = require('express')
 const EventsService = require('./events-service')
 const logger = require('../logger')
+const xss = require('xss')
+const { requireAuth } = require('../middleware/basic-auth')
+
 
 const eventRouter = express.Router()
 const jsonBodyParser = express.json()
@@ -8,20 +11,20 @@ const jsonBodyParser = express.json()
 const serializeEvent = event => ({
     id: event.id,
     weekday: event.weekday,
-    event: event.event,
+    event: xss(event.event),
     user_id: event.user_id || {}
 })
 
 eventRouter
     .route('/api/events')
-    .get((req, res, next) => {
+    .get(requireAuth, (req, res, next) => {
         EventsService.getAllEvents(req.app.get('db'))
             .then(events => {
                 res.json(events.map(serializeEvent))
             })
             .catch(next)
     })
-    .post(jsonBodyParser, (req, res, next) => {
+    .post(jsonBodyParser,requireAuth, (req, res, next) => {
         const newEvent = { ...req.body, date_created: 'now()' }
 
         for (const [key, value] of Object.entries(newEvent))
@@ -43,6 +46,44 @@ eventRouter
             .catch(next)
     })
 
+eventRouter
+    .route('/api/events/:id')
+    .all(requireAuth, (req, res, next) => {
+        const { id } = req.params;
+        EventsService.getById(req.app.get('db'), id)
+            .then(event => {
+                if (!event) {
+                    logger.info(`Event with id ${id} doesn't exist`);
+                    return res
+                        .status(404)
+                        .send({ error: { message: `Event doesn't exist` } })
+                }
+                res.event = event
+                next()
+            })
+            .catch(next)
+    })
+    .get((req, res) => {
+        res.json(serializeEvent(res.event))
+    })
+    .patch(jsonBodyParser, (req, res, next) => {
+        const updatedEvent = { ...req.body, date_created: 'now()' }
+        for (const [key, value] of Object.entries(updatedEvent)) {
+            if (value == null)
+                return res.status(400).json({
+                    error: `Missing '${key}' in request body`
+                })
+        }
+        return EventsService.updateEvent(
+            req.app.get('db'),
+            req.params.id,
+            updatedReview
+        )
+            .then(numRowsAffected => {
+                res.status(204).end()
+            })
+            .catch(next)
+    })
     .delete((req, res, next) => {
         const { id } = req.params;
         EventsService.deleteEvent(
@@ -58,7 +99,7 @@ eventRouter
 
 eventRouter
     .route('/api/myevents/:userid')
-    .get((req, res, next) => {
+    .get(requireAuth, (req, res, next) => {
         const { userid } = req.params;
         EventsService.getUserEvents(req.app.get('db'), userid)
             .then(events => {

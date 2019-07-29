@@ -73,7 +73,7 @@ usersRouter
 
 
 usersRouter
-    .route('/user/:id')
+    .route('/api/user/:id')
     .all((req, res, next) => {
         const { id } = req.params;
         UsersService.getById(req.app.get('db'), id)

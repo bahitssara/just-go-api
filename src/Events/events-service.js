@@ -2,8 +2,6 @@ const EventsService = {
     getAllEvents(knex) {
         return knex.select('*').from('events')
     },
-
-
     insertEvents(db, newEvent) {
         return db
             .insert(newEvent)
@@ -17,6 +15,18 @@ const EventsService = {
         return knex('events')
             .where({ id })
             .delete()
+    },
+    getById(db, id) {
+        return db
+            .from('events')
+            .select('*')
+            .where('id', id)
+            .first()
+    },
+    updateEvent(knex, id, newEventFields) {
+        return knex('events')
+            .where(id)
+            .update(newEventFields)
     },
     getUserEvents(knex, userid) {
         return knex 

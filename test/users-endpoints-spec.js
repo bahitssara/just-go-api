@@ -2,6 +2,8 @@ const knex = require('knex')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 const bcrypt = require('bcryptjs')
+const { TEST_DB_URL } = require('../src/config')
+
 
 describe('Users Endpoints', function () {
   let db
@@ -11,7 +13,7 @@ describe('Users Endpoints', function () {
   before('make knex instance', () => {
     db = knex({
       client: 'pg',
-      connection: process.env.TEST_DB_URL,
+      connection: TEST_DB_URL,
     })
     app.set('db', db)
   })
@@ -138,7 +140,7 @@ describe('Users Endpoints', function () {
               expect(res.body.last_name).to.eql(newUser.last_name)
               expect(res.body.user_name).to.eql(newUser.user_name)
               expect(res.body).to.not.have.property('password')
-              expect(res.headers.location).to.eql(`/user/${res.body.id}`)
+              expect(res.headers.location).to.eql(`/api/user/${res.body.id}`)
               const expectedDate = new Date().toLocaleString('en', { timeZone: 'UTC' })
               const actualDate = new Date(res.body.date_created).toLocaleString()
               expect(actualDate).to.eql(expectedDate)

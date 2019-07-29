@@ -32,7 +32,6 @@ app.use(eventRouter)
 app.use(usersRouter)
 app.use(authRouter)
 
-
 app.use(function errorHandler(error, req, res, next) {
     let response
     if(NODE_ENV === 'production') {
