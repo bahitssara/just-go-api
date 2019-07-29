@@ -4,6 +4,7 @@ const morgan = require('morgan')
 const cors = require('cors')
 const helmet = require('helmet')
 const eventRouter = require('./Events/events-router')
+const usersRouter = require('./Users/user-router')
 const {CLIENT_ORIGIN} = require('./config');
 const { NODE_ENV } = require('./config')
 
@@ -27,6 +28,8 @@ app.use(
 );
 
 app.use(eventRouter)
+app.use(usersRouter)
+
 
 app.use(function errorHandler(error, req, res, next) {
     let response
