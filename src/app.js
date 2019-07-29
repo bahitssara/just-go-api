@@ -5,7 +5,8 @@ const cors = require('cors')
 const helmet = require('helmet')
 const eventRouter = require('./Events/events-router')
 const usersRouter = require('./Users/user-router')
-const {CLIENT_ORIGIN} = require('./config');
+const authRouter = require('./Auth/auth-router')
+const {CLIENT_ORIGIN} = require('./config')
 const { NODE_ENV } = require('./config')
 
 const app = express()
@@ -29,6 +30,7 @@ app.use(
 
 app.use(eventRouter)
 app.use(usersRouter)
+app.use(authRouter)
 
 
 app.use(function errorHandler(error, req, res, next) {
