@@ -18,7 +18,7 @@ const EventsService = {
             .where({ id })
             .delete()
     },
-    getUserReviews(knex, userid) {
+    getUserEvents(knex, userid) {
         return knex 
             .select('*')
             .where('user_id', userid)
