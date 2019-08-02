@@ -45,13 +45,24 @@ function makeEventsArray() {
             'id': 1,
             'weekday': 'Monday',
             'event':'Test Events',
-            'user_id': 1
+            'title':'Test Title',
+            'event_date':'2029-01-22T16:28:32.615Z',
+            'event_img': 'img-url',
+            'event_url':'event_url',
+            'user_id': 1,
+            'date_created':'2029-01-22T16:28:32.615Z'
         },
         {
             'id': 2,
             'weekday': 'Tuesday',
             'event':'Test Events',
-            'user_id': 2
+            'title':'Test Title',
+            'event_date':'2029-01-22T16:28:32.615Z',
+            'event_img': 'img-url',
+            'event_url':'event_url',
+            'user_id': 2,
+            'date_created':'2029-01-22T16:28:32.615Z'
+
         }
     ]
 }

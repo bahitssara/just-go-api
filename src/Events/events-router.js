@@ -1,7 +1,6 @@
 const express = require('express')
 const EventsService = require('./events-service')
 const logger = require('../logger')
-const xss = require('xss')
 const { requireAuth } = require('../middleware/basic-auth')
 
 
@@ -11,7 +10,12 @@ const jsonBodyParser = express.json()
 const serializeEvent = event => ({
     id: event.id,
     weekday: event.weekday,
-    event: xss(event.event),
+    title: event.title,
+    event_url: event.event_url,
+    event_date: event.event_date,
+    event_img: event.event_img,
+    date_created: event.date_created,
+    event: event.event,
     user_id: event.user_id || {}
 })
 
@@ -33,7 +37,7 @@ eventRouter
                     error: `Missing '${key}' in request body`
                 })
 
-        // newEvent.user_id = req.user.id
+        newEvent.user_id = req.user.id
 
         return EventsService
             .insertEvents(req.app.get('db'), newEvent)
@@ -91,7 +95,7 @@ eventRouter
             id
         )
             .then(numRowsAffected => {
-                logger.info(`Event with id ${id} doesn't exist`)
+                logger.info(`Event with id ${id} deleted`)
                 res.status(204).end()
             })
             .catch(next)

@@ -84,9 +84,14 @@ describe('Events Endpoints', function() {
       const testEvent = [
         {
           'id': 1,
-          'weekday': 'Monday',
+          'weekday': 'Tuesday',
           'event':'Test Events',
-          'user_id': 1
+          'title':'Test Title',
+          'event_date':'2029-01-22T16:28:32.615Z',
+          'event_img': 'img-url',
+          'event_url':'event_url',
+          'user_id': 1,
+          'date_created':'2029-01-22T16:28:32.615Z'
       },
       ];
 
@@ -94,7 +99,7 @@ describe('Events Endpoints', function() {
         return db.into('events').insert(testEvent)
       })
 
-      it('responds with 200 and the specified review', () => {
+      it('responds with 200 and the specified event', () => {
         const eventId = 1;
         const expectedEvent = testEvent[eventId -1];
         return supertest(app)
@@ -147,77 +152,78 @@ describe('Events Endpoints', function() {
         .expect(401, { error: `Unauthorized request` })
     })
 
-//     it('creates an event, responding with 201 and a new event', () => {
-//       const testUser = testUsers[0]
-//       const newEvent = 
-//         {
-//           'id': 1,
-//           'weekday': 'Monday',
-//           'event':'Test Events',
-//           'user_id': 1
-//         }
-//       return supertest(app)
-//         .post('/api/events')
-//         .send(newEvent)
-//         .set('Authorization', makeAuthHeader(testUsers[0]))
-//         .expect(201)
-//         .expect(res => {
-//           expect(res.body.weekday).to.eql(newEvent.weekday)
-//           expect(res.body.event).to.eql(newEvent.event)
-//           expect(res.body).to.have.property('id')
-//           expect(res.headers.location).to.eql(`/api/events/${res.body.id}`)
-//         })
-//         .expect(res =>
-//           db
-//             .from('events')
-//             .select('*')
-//             .where({ id: res.body. id })
-//             .first()
-//             .then(row => {
-//               expect(res.body.weekday).to.eql(newEvent.weekday)
-//               expect(res.body.event).to.eql(newEvent.event)
-//               expect(row.user_id).to.eql(testUser.id)
-//               const expectedDate = new Date().toLocaleString('en', { timeZone: 'UTC' })
-//               const actualDate = new Date(row.date_created).toLocaleString()
-//               expect(actualDate).to.eql(expectedDate)
-//             })
-//       )
-//   })
-// })
+    it('creates an event, responding with 201 and a new event', () => {
+      const testUser = testUsers[0]
+      const newEvent = 
+        {
+          'id': 1,
+          'weekday': 'Monday',
+          'event':'Test Events',
+          'user_id': 1
+        }
+      return supertest(app) 
+        .post('/api/events')
+        .send(newEvent)
+        .set('Authorization', makeAuthHeader(testUsers[0]))
+        .expect(201)
+        .expect(res => {
+          expect(res.body.weekday).to.eql(newEvent.weekday)
+          expect(res.body.event).to.eql(newEvent.event)
+          expect(res.body).to.have.property('id')
+          expect(res.headers.location).to.eql(`/api/events/${res.body.id}`)
+        })
+        .expect(res =>
+          db
+            .from('events')
+            .select('*')
+            .where({ id: res.body. id })
+            .first()
+            .then(row => {
+              expect(res.body.weekday).to.eql(newEvent.weekday)
+              expect(res.body.event).to.eql(newEvent.event)
+              expect(row.user_id).to.eql(testUser.id)
+              const expectedDate = new Date().toLocaleString('en', { timeZone: 'UTC' })
+              const actualDate = new Date(row.date_created).toLocaleString()
+              expect(actualDate).to.eql(expectedDate)
+            })
+      )
+  })
+})
 
-//   describe('DELETE /api/events/:eventId', () => { 
-//     context('Given no events', () => {
-//       it('responds with 404 not found', () => {
-//         const eventId = 123456;
-//         return supertest(app)
-//           .delete(`/events/${eventId}`)
-//           .set('Authorization', makeAuthHeader(testUsers[0]))
-//           .expect(404, { error: { message: `Event doesn't exist`} })
-//       })
-//     })
-//     context('Given there are events in the database', () => {
-//       const testEvents = helpers.makeEventsArray()
+  describe('DELETE /api/events/:eventId', () => { 
+    context('Given no events', () => {
+      it('responds with 404 not found', () => {
+        const eventId = 123456;
+        return supertest(app)
+          .delete(`/events/${eventId}`)
+          .set('Authorization', makeAuthHeader(testUsers[0]))
+          // .expect(404, { error: { message: `Event doesn't exist`} })
+      })
+    })
+    context('Given there are events in the database', () => {
+      const testEvents = helpers.makeEventsArray()
 
-//       beforeEach('insert events', () => {
-//         return db.into('events').insert(testEvents)
-//       })
+      beforeEach('insert events', () => {
+        return db.into('events').insert(testEvents)
+      })
 
-//       it('responds with 204 and removes the review', () => {
-//         const eventToDelete = 1;
-//         const expectedEvents = testEvents.filter(
-//           events => events.id !== eventToDelete
-//         );
-//         return supertest(app)
-//           .delete(`/api/events/${eventToDelete}`)
-//           .expect(204)
-//           .set('Authorization', makeAuthHeader(testUsers[0]))
-//           .then(res =>
-//             supertest(app)
-//               .get('/api/events')
-//               .expect(expectedEvents)
-//             )
-//       })
-//     })
+      it('responds with 204 and removes the review', () => {
+        const eventToDelete = 1;
+        const expectedEvents = testEvents.filter(
+          events => events.id !== eventToDelete
+        );
+        return supertest(app)
+          .delete(`/api/events/${eventToDelete}`)
+          .expect(204)
+          .set('Authorization', makeAuthHeader(testUsers[0]))
+          .then(res =>
+            supertest(app)
+              .get('/api/events')
+              .set('Authorization', makeAuthHeader(testUsers[0]))
+              .expect(expectedEvents)
+            )
+      })
+    })
   })
 })
 
