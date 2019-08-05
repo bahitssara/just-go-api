@@ -13,6 +13,7 @@ const serializeEvent = event => ({
     title: event.title,
     event_url: event.event_url,
     event_date: event.event_date,
+    event_type: event.event_type,
     event_img: event.event_img,
     date_created: event.date_created,
     event: event.event,

@@ -49,6 +49,7 @@ function makeEventsArray() {
             'event_date':'2029-01-22T16:28:32.615Z',
             'event_img': 'img-url',
             'event_url':'event_url',
+            'event_type':'event_type',
             'user_id': 1,
             'date_created':'2029-01-22T16:28:32.615Z'
         },
@@ -60,6 +61,7 @@ function makeEventsArray() {
             'event_date':'2029-01-22T16:28:32.615Z',
             'event_img': 'img-url',
             'event_url':'event_url',
+            'event_type':'event_type',
             'user_id': 2,
             'date_created':'2029-01-22T16:28:32.615Z'
 
