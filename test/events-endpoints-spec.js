@@ -5,132 +5,132 @@ const helpers = require('./test-helpers')
 const jwt = require('jsonwebtoken')
 
 
-describe('Events Endpoints', function() {
-    let db
-    
-    const testUsers = helpers.makeUsersArray()
-    const testEvents = helpers.makeEventsArray()
+describe('Events Endpoints', function () {
+  let db
 
-    function makeAuthHeader(user, secret = JWT_SECRET) {
-      const token = jwt.sign({ user_id: user.id }, secret, {
-        subject: user.email,
-        algorithm: 'HS256',
+  const testUsers = helpers.makeUsersArray()
+  const testEvents = helpers.makeEventsArray()
+
+  function makeAuthHeader(user, secret = JWT_SECRET) {
+    const token = jwt.sign({ user_id: user.id }, secret, {
+      subject: user.email,
+      algorithm: 'HS256',
+    })
+    return `bearer ${token}`
+  }
+
+  before('make knex instance', () => {
+    db = knex({
+      client: 'pg',
+      connection: TEST_DB_URL,
+    })
+    app.set('db', db)
+  })
+
+  after('disconnect from db', () => db.destroy())
+
+  before('cleanup', () => helpers.cleanTables(db))
+
+  afterEach('cleanup', () => helpers.cleanTables(db))
+
+  beforeEach('insert users', () => {
+    return db.into('this_week_users').insert(testUsers)
+  })
+
+  // beforeEach('insert events', () => {
+  //     return db.into('events').insert(testEvents)
+  // })
+
+  describe(`GET /events`, () => {
+    context(`Given no events`, () => {
+      it(`responds with 200 and an empty list`, () => {
+        return supertest(app)
+          .get('/api/events')
+          .set('Authorization', makeAuthHeader(testUsers[0]))
+          .expect(200, [])
       })
-      return `bearer ${token}`
-    }
-  
-    before('make knex instance', () => {
-      db = knex({
-        client: 'pg',
-        connection: TEST_DB_URL,
-      })
-      app.set('db', db)
-    })
-  
-    after('disconnect from db', () => db.destroy())
-  
-    before('cleanup', () => helpers.cleanTables(db))
-  
-    afterEach('cleanup', () => helpers.cleanTables(db))
-
-    beforeEach('insert users', () => {
-        return db.into('this_week_users').insert(testUsers)
-    })
-  
-    // beforeEach('insert events', () => {
-    //     return db.into('events').insert(testEvents)
-    // })
-
-    describe(`GET /events`, () => {
-        context(`Given no events`, () => {
-          it(`responds with 200 and an empty list`, () => {
-            return supertest(app)
-              .get('/api/events')
-              .set('Authorization', makeAuthHeader(testUsers[0]))
-              .expect(200, [])
-          })
-        });
-
-        context('Given there are events in the database', () => {
-            const testEvents = helpers.makeEventsArray()
-            
-            beforeEach('insert events', () => {
-                return db
-                    .into('events')
-                    .insert(testEvents)
-            })
-            it('GET /api/events responds with 200 and all the events', () => {
-                return supertest(app)
-                    .get('/api/events')
-                    .set('Authorization', makeAuthHeader(testUsers[0]))
-                    .expect(200, testEvents)
-            })
-        })
-    })
-
-    describe('GET /api/events/:eventId responds with 200 and all the events', () => {
-      context('Given no events', () => {
-        it('responds with 404 not found', () => {
-          const eventId = 123456;
-          return supertest(app)
-            .get(`/api/events/${eventId}`)
-            .set('Authorization', makeAuthHeader(testUsers[0]))
-            .expect(404, {error: {message: `Event doesn't exist`} })
-        })
-      })
-    })
+    });
 
     context('Given there are events in the database', () => {
-      const testEvent = [
-        {
-          'id': 1,
-          'weekday': 'Tuesday',
-          'event':'Test Events',
-          'title':'Test Title',
-          'event_date':'2029-01-22T16:28:32.615Z',
-          'event_img': 'img-url',
-          'event_url':'event_url',
-          'event_type': 'Test event',
-          'user_id': 1,
-          'date_created':'2029-01-22T16:28:32.615Z'
-      },
-      ];
+      const testEvents = helpers.makeEventsArray()
 
-      beforeEach('insert event', () => {
-        return db.into('events').insert(testEvent)
+      beforeEach('insert events', () => {
+        return db
+          .into('events')
+          .insert(testEvents)
       })
+      it('GET /api/events responds with 200 and all the events', () => {
+        return supertest(app)
+          .get('/api/events')
+          .set('Authorization', makeAuthHeader(testUsers[0]))
+          .expect(200, testEvents)
+      })
+    })
+  })
 
-      it('responds with 200 and the specified event', () => {
-        const eventId = 1;
-        const expectedEvent = testEvent[eventId -1];
+  describe('GET /api/events/:eventId responds with 200 and all the events', () => {
+    context('Given no events', () => {
+      it('responds with 404 not found', () => {
+        const eventId = 123456;
         return supertest(app)
           .get(`/api/events/${eventId}`)
           .set('Authorization', makeAuthHeader(testUsers[0]))
-          .expect(200, expectedEvent)
+          .expect(404, { error: { message: `Event doesn't exist` } })
       })
     })
+  })
+
+  context('Given there are events in the database', () => {
+    const testEvent = [
+      {
+        'id': 1,
+        'weekday': 'Tuesday',
+        'event': 'Test Events',
+        'title': 'Test Title',
+        'event_date': '2029-01-22T16:28:32.615Z',
+        'event_img': 'img-url',
+        'event_url': 'event_url',
+        'event_type': 'Test event',
+        'user_id': 1,
+        'date_created': '2029-01-22T16:28:32.615Z'
+      },
+    ];
+
+    beforeEach('insert event', () => {
+      return db.into('events').insert(testEvent)
+    })
+
+    it('responds with 200 and the specified event', () => {
+      const eventId = 1;
+      const expectedEvent = testEvent[eventId - 1];
+      return supertest(app)
+        .get(`/api/events/${eventId}`)
+        .set('Authorization', makeAuthHeader(testUsers[0]))
+        .expect(200, expectedEvent)
+    })
+  })
 
 
   describe('POST /api/events', () => {
     context('Given there are events in the database', () => {
       const testEvents = helpers.makeEventsArray()
       beforeEach('insert events', () => {
-          return db
-              .into('events')
-              .set('Authorization', makeAuthHeader(testUsers[0]))
-              .insert(testEvents)
+        return db
+          .into('events')
+          .set('Authorization', makeAuthHeader(testUsers[0]))
+          .insert(testEvents)
       })
     })
 
     it(`responds with 401 'Missing bearer token when no basic token`, () => {
-      const newEvent = 
+      const newEvent =
       {
         'weekday': 'Tuesday',
-        'event':'Test Events',
-        'title':'Test Title',
-        'event_date':'2029-01-22T16:28:32.615Z',
+        'event': 'Test Events',
+        'title': 'Test Title',
+        'event_date': '2029-01-22T16:28:32.615Z',
         'event_img': 'img-url',
-        'event_url':'event_url',
+        'event_url': 'event_url',
         'event_type': 'Test event',
         'user_id': 1,
       };
@@ -138,15 +138,15 @@ describe('Events Endpoints', function() {
         .post(`/api/events`)
         .send(newEvent)
         .expect(401, { error: `Missing bearer token` })
-      } 
+    }
     )
 
     it(`responds 401 'Unauthorized request' when no credentials in token`, () => {
-       const userNoCreds = { email: '', password: '' }
-         return supertest(app)
-          .post(`/api/events`)
-          .set('Authorization', makeAuthHeader(userNoCreds))
-          .expect(401, { error: `Unauthorized request` })
+      const userNoCreds = { email: '', password: '' }
+      return supertest(app)
+        .post(`/api/events`)
+        .set('Authorization', makeAuthHeader(userNoCreds))
+        .expect(401, { error: `Unauthorized request` })
     })
 
     it(`responds 401 'Unauthorized request' when invalid user`, () => {
@@ -159,14 +159,14 @@ describe('Events Endpoints', function() {
 
     it('creates an event, responding with 201 and a new event', () => {
       const testUser = testUsers[0]
-      const newEvent = 
-        {
-          'id': 1,
-          'weekday': 'Monday',
-          'event':'Test Events',
-          'user_id': 1
-        }
-      return supertest(app) 
+      const newEvent =
+      {
+        'id': 1,
+        'weekday': 'Monday',
+        'event': 'Test Events',
+        'user_id': 1
+      }
+      return supertest(app)
         .post('/api/events')
         .send(newEvent)
         .set('Authorization', makeAuthHeader(testUsers[0]))
@@ -181,7 +181,7 @@ describe('Events Endpoints', function() {
           db
             .from('events')
             .select('*')
-            .where({ id: res.body. id })
+            .where({ id: res.body.id })
             .first()
             .then(row => {
               expect(res.body.weekday).to.eql(newEvent.weekday)
@@ -191,18 +191,18 @@ describe('Events Endpoints', function() {
               const actualDate = new Date(row.date_created).toLocaleString()
               expect(actualDate).to.eql(expectedDate)
             })
-      )
+        )
+    })
   })
-})
 
-  describe('DELETE /api/events/:eventId', () => { 
+  describe('DELETE /api/events/:eventId', () => {
     context('Given no events', () => {
       it('responds with 404 not found', () => {
         const eventId = 123456;
         return supertest(app)
           .delete(`/events/${eventId}`)
           .set('Authorization', makeAuthHeader(testUsers[0]))
-          // .expect(404, { error: { message: `Event doesn't exist`} })
+        // .expect(404, { error: { message: `Event doesn't exist`} })
       })
     })
     context('Given there are events in the database', () => {
@@ -226,7 +226,7 @@ describe('Events Endpoints', function() {
               .get('/api/events')
               .set('Authorization', makeAuthHeader(testUsers[0]))
               .expect(expectedEvents)
-            )
+          )
       })
     })
   })

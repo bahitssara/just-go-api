@@ -29,7 +29,7 @@ const EventsService = {
             .update(newEventFields)
     },
     getUserEvents(knex, userid) {
-        return knex 
+        return knex
             .select('*')
             .where('user_id', userid)
             .from('events')

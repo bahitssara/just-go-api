@@ -2,6 +2,7 @@ const express = require('express')
 const path = require('path')
 const logger = require('../logger')
 const UsersService = require('./users-service.js')
+const AuthService = require('../Auth/auth-service')
 const xss = require('xss')
 
 const usersRouter = express.Router()

@@ -3,70 +3,70 @@ const jwt = require('jsonwebtoken')
 
 
 function makeUsersArray() {
-    return [
-      {
-        id: 1,
-        first_name: 'Test',
-        last_name: 'User',
-        email: 'testemail1@email.com',
-        password: 'password1',
-        date_created: '2029-01-22T16:28:32.615Z',
-      },
-      {
-        id: 2,
-        first_name: 'Test',
-        last_name: 'User',
-        email: 'testemail2@email.com',
-        password: 'password2',
-        date_created: '2029-01-22T16:28:32.615Z',
-      },
-      {
-        id: 3,
-        first_name: 'Test',
-        last_name: 'User',
-        email: 'testemail3@email.com',
-        password: 'password3',
-        date_created: '2029-01-22T16:28:32.615Z',
-      },
-      {
-        id: 4,
-        first_name: 'Test',
-        last_name: 'User',
-        email: 'testemail4@email.com',
-        password: 'password4',
-        date_created: '2029-01-22T16:28:32.615Z',
-      },
-    ]
-  }
+  return [
+    {
+      id: 1,
+      first_name: 'Test',
+      last_name: 'User',
+      email: 'testemail1@email.com',
+      password: 'password1',
+      date_created: '2029-01-22T16:28:32.615Z',
+    },
+    {
+      id: 2,
+      first_name: 'Test',
+      last_name: 'User',
+      email: 'testemail2@email.com',
+      password: 'password2',
+      date_created: '2029-01-22T16:28:32.615Z',
+    },
+    {
+      id: 3,
+      first_name: 'Test',
+      last_name: 'User',
+      email: 'testemail3@email.com',
+      password: 'password3',
+      date_created: '2029-01-22T16:28:32.615Z',
+    },
+    {
+      id: 4,
+      first_name: 'Test',
+      last_name: 'User',
+      email: 'testemail4@email.com',
+      password: 'password4',
+      date_created: '2029-01-22T16:28:32.615Z',
+    },
+  ]
+}
 
 function makeEventsArray() {
-    return [
-        {
-            'id': 1,
-            'weekday': 'Monday',
-            'event':'Test Events',
-            'title':'Test Title',
-            'event_date':'2029-01-22T16:28:32.615Z',
-            'event_img': 'img-url',
-            'event_url':'event_url',
-            'event_type':'event_type',
-            'user_id': 1,
-            'date_created':'2029-01-22T16:28:32.615Z'
-        },
-        {
-            'id': 2,
-            'weekday': 'Tuesday',
-            'event':'Test Events',
-            'title':'Test Title',
-            'event_date':'2029-01-22T16:28:32.615Z',
-            'event_img': 'img-url',
-            'event_url':'event_url',
-            'event_type':'event_type',
-            'user_id': 2,
-            'date_created':'2029-01-22T16:28:32.615Z'
+  return [
+    {
+      'id': 1,
+      'weekday': 'Monday',
+      'event': 'Test Events',
+      'title': 'Test Title',
+      'event_date': '2029-01-22T16:28:32.615Z',
+      'event_img': 'img-url',
+      'event_url': 'event_url',
+      'event_type': 'event_type',
+      'user_id': 1,
+      'date_created': '2029-01-22T16:28:32.615Z'
+    },
+    {
+      'id': 2,
+      'weekday': 'Tuesday',
+      'event': 'Test Events',
+      'title': 'Test Title',
+      'event_date': '2029-01-22T16:28:32.615Z',
+      'event_img': 'img-url',
+      'event_url': 'event_url',
+      'event_type': 'event_type',
+      'user_id': 2,
+      'date_created': '2029-01-22T16:28:32.615Z'
 
-        }
-    ]
+    }
+  ]
 }
 
 function cleanTables(db) {
@@ -100,9 +100,9 @@ function seedUsers(db, users) {
 }
 
 module.exports = {
-    makeEventsArray,
-    makeUsersArray,
-    cleanTables,
-    makeFixtures,
-    seedUsers
+  makeEventsArray,
+  makeUsersArray,
+  cleanTables,
+  makeFixtures,
+  seedUsers
 }

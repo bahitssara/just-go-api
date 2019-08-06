@@ -29,7 +29,7 @@ eventRouter
             })
             .catch(next)
     })
-    .post(jsonBodyParser,requireAuth, (req, res, next) => {
+    .post(jsonBodyParser, requireAuth, (req, res, next) => {
         const newEvent = { ...req.body, date_created: 'now()' }
 
         for (const [key, value] of Object.entries(newEvent))
