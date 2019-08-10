@@ -103,6 +103,7 @@ eventRouter
     })
 
 eventRouter
+    //used to retrieve events only posted by the logged in user 
     .route('/api/myevents/:userid')
     .get(requireAuth, (req, res, next) => {
         const { userid } = req.params;

@@ -32,3 +32,5 @@
 {"message":"Event with id 1 deleted","level":"info"}
 {"message":"Event with id 123456 doesn't exist","level":"info"}
 {"message":"Event with id 1 deleted","level":"info"}
+{"message":"Event with id 123456 doesn't exist","level":"info"}
+{"message":"Event with id 1 deleted","level":"info"}

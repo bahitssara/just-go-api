@@ -19,6 +19,7 @@ authRouter
             req.app.get('db'),
             loginUser.email
         )
+            //verify user email is in the database 
             .then(dbUser => {
                 if (!dbUser)
                     return res.status(400).json({
@@ -26,6 +27,7 @@ authRouter
                     })
                         .catch(next)
 
+                //once verified, hash and compare the user login password val with the database value
                 return AuthService.comparePasswords(loginUser.password, dbUser.password)
                     .then(compareMatch => {
                         if (!compareMatch)
@@ -33,8 +35,10 @@ authRouter
                                 error: 'Incorrect password',
                             })
 
+                        //send the user email and retrieve the userid for payload
                         const sub = dbUser.email
                         const payload = { user_id: dbUser.id }
+                        //send the auth token AND userid for use in the session storage
                         res.send({
                             authToken: AuthService.createJwt(sub, payload),
                             userid: dbUser.id
