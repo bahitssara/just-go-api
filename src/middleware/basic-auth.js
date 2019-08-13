@@ -1,5 +1,6 @@
 const AuthService = require('../Auth/auth-service')
 
+//Verify tokens are present to access API data 
 function requireAuth(req, res, next) {
   const authToken = req.get('authorization') || ''
 
@@ -16,7 +17,7 @@ function requireAuth(req, res, next) {
   if (!isAuthenticated) {
     return res.status(401).json({ error: 'Unauthorized request' })
   }
-
+  //get user email to create auth token and verify user is logged in
   AuthService.getUserWithEmail(
     req.app.get('db'),
     isAuthenticated.sub

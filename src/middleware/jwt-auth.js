@@ -1,5 +1,6 @@
 const AuthService = require('../Auth/auth-service')
 
+//Verify tokens are present to access API data 
 function requireAuth(req, res, next) {
   const authToken = req.get('Authorization') || ''
 

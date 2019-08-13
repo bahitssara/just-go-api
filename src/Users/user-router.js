@@ -17,7 +17,10 @@ const serializeUser = user => ({
 })
 
 usersRouter
+//Endpoint to view all current users, and post new users 
     .route('/api/user')
+
+    //view users, admin use only
     .get((req, res, next) => {
         UsersService.getAllUsers(req.app.get('db'))
             .then(users => {
@@ -26,6 +29,7 @@ usersRouter
             .catch(next)
     })
 
+    //post new users, used for user sign up 
     .post(jsonBodyParser, (req, res, next) => {
         const { first_name, last_name, email, password } = req.body
 
@@ -42,6 +46,7 @@ usersRouter
             return res.status(400).json({ error: passwordError })
         }
 
+        //Check DB to ensure user email has not already been used
         UsersService.hasUserWithEmail(
             req.app.get('db'),
             email
@@ -50,6 +55,7 @@ usersRouter
                 if (hasUserWithEmail)
                     return res.status(400).json({ error: `Email already in use, please sign in!` })
 
+                //generates hashed password to store in DB
                 return UsersService.hashPassword(password)
                     .then(hashedPassword => {
                         const newUser = {
@@ -74,7 +80,10 @@ usersRouter
 
 
 usersRouter
+    //Endpoint for viewing individual user info, editing, and deleting users. 
     .route('/api/user/:id')
+
+    //access db to retrieve a posted user by id 
     .all((req, res, next) => {
         const { id } = req.params;
         UsersService.getById(req.app.get('db'), id)
@@ -90,9 +99,13 @@ usersRouter
             })
             .catch(next)
     })
+
+    //retrieve user 
     .get((req, res) => {
         res.json(serializeUser(res.user))
     })
+
+    //update user, only used for admin
     .patch(jsonBodyParser, (req, res, next) => {
         const updatedUserInfo = { ...req.body, date_created: 'now()' }
         for (const [key, value] of Object.entries(updatedUserInfo)) {
@@ -111,6 +124,8 @@ usersRouter
             })
             .catch(next)
     })
+
+    //delete user, only used for admin 
     .delete((req, res, next) => {
         const { id } = req.params;
         UsersService.deleteUser(

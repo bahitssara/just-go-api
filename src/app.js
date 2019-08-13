@@ -28,6 +28,7 @@ app.use(
     })
 );
 
+//Router endpoints 
 app.use(eventRouter)
 app.use(usersRouter)
 app.use(authRouter)

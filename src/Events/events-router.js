@@ -20,8 +20,12 @@ const serializeEvent = event => ({
     user_id: event.user_id || {}
 })
 
+
 eventRouter
+    //endpoint for retrieving and posting events 
     .route('/api/events')
+
+    //get all events 
     .get(requireAuth, (req, res, next) => {
         EventsService.getAllEvents(req.app.get('db'))
             .then(events => {
@@ -29,6 +33,7 @@ eventRouter
             })
             .catch(next)
     })
+    //post new events 
     .post(jsonBodyParser, requireAuth, (req, res, next) => {
         const newEvent = { ...req.body, date_created: 'now()' }
 
@@ -52,7 +57,10 @@ eventRouter
     })
 
 eventRouter
+    //endpoint for retrieving, editing, and deleting specific events
     .route('/api/events/:id')
+
+    //access db to retrieve events by id
     .all(requireAuth, (req, res, next) => {
         const { id } = req.params;
         EventsService.getById(req.app.get('db'), id)
@@ -68,9 +76,13 @@ eventRouter
             })
             .catch(next)
     })
+
+    //retrieve specific event
     .get((req, res) => {
         res.json(serializeEvent(res.event))
     })
+
+    //edit event
     .patch(jsonBodyParser, (req, res, next) => {
         const updatedEvent = { ...req.body, date_created: 'now()' }
         for (const [key, value] of Object.entries(updatedEvent)) {
@@ -89,6 +101,8 @@ eventRouter
             })
             .catch(next)
     })
+
+    //delete event 
     .delete((req, res, next) => {
         const { id } = req.params;
         EventsService.deleteEvent(
@@ -103,10 +117,12 @@ eventRouter
     })
 
 eventRouter
-    //used to retrieve events only posted by the logged in user 
+    //endpoint to retrieve user specific events 
     .route('/api/myevents/:userid')
     .get(requireAuth, (req, res, next) => {
         const { userid } = req.params;
+
+        //retrieve events only posted by the specified user 
         EventsService.getUserEvents(req.app.get('db'), userid)
             .then(events => {
                 if (!events) {

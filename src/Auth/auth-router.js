@@ -4,7 +4,10 @@ const authRouter = express.Router()
 const jsonBodyParser = express.json()
 
 authRouter
+    //endpoint for user login
     .route('/api/login')
+
+    //post for login
     .post(jsonBodyParser, (req, res, next) => {
         const { email, password } = req.body
         const loginUser = { email, password }
@@ -14,7 +17,7 @@ authRouter
                 return res.status(400).json({
                     error: `Missing '${key}' in request body`
                 })
-
+        
         AuthService.getUserWithEmail(
             req.app.get('db'),
             loginUser.email
